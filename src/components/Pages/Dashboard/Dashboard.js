@@ -3,7 +3,8 @@ import { fetchCharacters, fetchFilms, fetchHomeworld, fetchPlanets, fetchSpecies
 import { Dialog, DialogTitle, DialogContent, CircularProgress, TextField } from '@mui/material';
 import { Select } from 'antd';
 import { Input } from 'antd';
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFilmsList, fetchPlanetsList, fetchSpeciesList } from "../../../redux/slices/apiSlice";
 
 
 
@@ -30,48 +31,61 @@ const Dashboard = () => {
     });
     const { Search } = Input;
 
-    const fetchFilmsList = async () => {
-        try {
-            const response = await fetchFilms();
-            if (response?.results?.length > 0) {
-                const data = [];
-                response.results.map((item) => {
-                    data.push({ value: item.url, label: item.title },)
-                })
-                setFilmsNameList(data);
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    const fetchPlanetsList = async () => {
-        try {
-            const response = await fetchPlanets();
-            if (response?.results?.length > 0) {
-                const data = [];
-                response.results.map((item) => {
-                    data.push({ value: item.url, label: item.name },)
-                })
-                setPlanstNameList(data);
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    const fetchSpeciesList = async () => {
-        try {
-            const response = await fetchSpecies();
-            if (response?.results?.length > 0) {
-                const data = [];
-                response.results.map((item) => {
-                    data.push({ value: item.url, label: item.name },)
-                })
-                setSpeciesNameList(data);
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
+
+    const dispatch = useDispatch();
+
+    // Select data from Redux store
+    const { films, planets, species } = useSelector((state) => state.data);
+
+    // Dispatch API calls on component mount
+    useEffect(() => {
+        dispatch(fetchFilmsList());
+        dispatch(fetchPlanetsList());
+        dispatch(fetchSpeciesList());
+    }, [dispatch]);
+
+    // const fetchFilmsList = async () => {
+    //     try {
+    //         const response = await fetchFilms();
+    //         if (response?.results?.length > 0) {
+    //             const data = [];
+    //             response.results.map((item) => {
+    //                 data.push({ value: item.url, label: item.title },)
+    //             })
+    //             setFilmsNameList(data);
+    //         }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+    // const fetchPlanetsList = async () => {
+    //     try {
+    //         const response = await fetchPlanets();
+    //         if (response?.results?.length > 0) {
+    //             const data = [];
+    //             response.results.map((item) => {
+    //                 data.push({ value: item.url, label: item.name },)
+    //             })
+    //             setPlanstNameList(data);
+    //         }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+    // const fetchSpeciesList = async () => {
+    //     try {
+    //         const response = await fetchSpecies();
+    //         if (response?.results?.length > 0) {
+    //             const data = [];
+    //             response.results.map((item) => {
+    //                 data.push({ value: item.url, label: item.name },)
+    //             })
+    //             setSpeciesNameList(data);
+    //         }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     //Call characterlist get api
     const fetchCharactersList = async () => {
@@ -100,12 +114,7 @@ const Dashboard = () => {
             setLoadingStatus(false);
         }
     };
-    // call all select list data
-    useEffect(() => {
-        fetchFilmsList();
-        fetchPlanetsList();
-        fetchSpeciesList();
-    }, [])
+
     //Call the api to show detials on dashboard
     useEffect(() => {
         fetchCharactersList();
@@ -203,7 +212,7 @@ const Dashboard = () => {
                                     id="homeworld"
                                     style={{ width: 120 }}
                                     onChange={(value) => handleFilterChange("homeworld", value)}
-                                    options={[{ value: "All", label: "All" }, ...plantsNameList]}
+                                    options={[{ value: "All", label: "All" }, ...planets]}
                                 />
                             </div>
                             <div className="gap-2 flex items-center">
@@ -213,7 +222,7 @@ const Dashboard = () => {
                                     id="film"
                                     style={{ width: 120 }}
                                     onChange={(value) => handleFilterChange("film", value)}
-                                    options={[{ value: "All", label: "All" }, ...filmsNameList]}
+                                    options={[{ value: "All", label: "All" }, ...films]}
                                 />
                             </div>
                             <div className="gap-2 flex items-center">
@@ -223,7 +232,7 @@ const Dashboard = () => {
                                     id="species"
                                     style={{ width: 120 }}
                                     onChange={(value) => handleFilterChange("species", value)}
-                                    options={[{ value: "All", label: "All" }, ...speciesNameList]}
+                                    options={[{ value: "All", label: "All" }, ...species]}
                                 />
                             </div>
                         </div>
