@@ -20,9 +20,16 @@ const Dashboard = () => {
     const [prevDisable, setPrevDisable] = useState(true);
     const [filmsNameList, setFilmsNameList] = useState([]);
     const [plantsNameList, setPlanstNameList] = useState([]);
-    const [SpeciesNameList, setSpeciesNameList] = useState([]);
+    const [speciesNameList, setSpeciesNameList] = useState([]);
+    const [filteredCharacters, setFilteredCharacters] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filters, setFilters] = useState({
+        homeworld: "All",
+        film: "All",
+        species: "All",
+    });
     const { Search } = Input;
-    
+
     const fetchFilmsList = async () => {
         try {
             const response = await fetchFilms();
@@ -66,6 +73,7 @@ const Dashboard = () => {
         }
     }
 
+    //Call characterlist get api
     const fetchCharactersList = async () => {
         setLoadingStatus(true);
         try {
@@ -84,6 +92,7 @@ const Dashboard = () => {
                     setPrevDisable(false);
                 }
                 setListDetails(response?.results);
+                setFilteredCharacters(response?.results);
                 setTotalCount(response?.count);
                 setLoadingStatus(false);
             }
@@ -91,14 +100,18 @@ const Dashboard = () => {
             setLoadingStatus(false);
         }
     };
-
+    // call all select list data
     useEffect(() => {
-        fetchCharactersList();
         fetchFilmsList();
         fetchPlanetsList();
         fetchSpeciesList();
+    }, [])
+    //Call the api to show detials on dashboard
+    useEffect(() => {
+        fetchCharactersList();
     }, [pageNumber]);
 
+    // handle to set modal box details
     const handleOpenModal = async (data) => {
         setModalOpen(true);
         setModalLoader(true);
@@ -116,7 +129,11 @@ const Dashboard = () => {
             setModalLoader(false);
         }
     }
-    const onSearch = (value, _e, info) => console.log(info?.source, value);
+    //Set search value
+    const onSearch = (e) => {
+        console.log(e.target.value);
+        setSearchTerm(e.target.value)
+    };
 
     // Format date in dd-MM-yyyy
     const formatDate = (dateString) => {
@@ -126,7 +143,48 @@ const Dashboard = () => {
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     };
-    const handleChange = (event) => {
+
+    // Filter and search logic
+    const applyFilters = () => {
+        let filteredList = listDetails;
+
+        // Search by name (partial or full match, case-insensitive)
+        if (searchTerm) {
+            filteredList = filteredList.filter(character =>
+                character.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Filter by homeworld
+        if (filters.homeworld !== "All") {
+            filteredList = filteredList.filter(character => character.homeworld === filters.homeworld);
+        }
+
+        // Filter by film
+        if (filters.film !== "All") {
+            filteredList = filteredList.filter(character =>
+                character.films.some(film => film === filters.film)
+            );
+        }
+
+        // Filter by species
+        if (filters.species !== "All") {
+            filteredList = filteredList.filter(character => character.species === filters.species);
+        }
+
+        setFilteredCharacters(filteredList);
+    };
+
+    // Update filtered characters when searchTerm or filters change
+    useEffect(() => {
+        applyFilters();
+    }, [searchTerm, filters]);
+
+    const handleFilterChange = (filterType, value) => {
+        setFilters({
+            ...filters,
+            [filterType]: value,
+        });
     };
 
     return (
@@ -137,15 +195,15 @@ const Dashboard = () => {
                 ) : listDetails?.length > 0 ? (
                     <>
                         <div className="flex flex-wrap flex-1 w-full justify-end items-center gap-4">
-                            <Search placeholder="Search by name" onSearch={onSearch} style={{ width: 200 }} />
+                            <Search placeholder="Search by name" onChange={onSearch} style={{ width: 200 }} />
                             <div className="gap-2 flex items-center">
                                 <label>Homeworld :</label>
                                 <Select
                                     defaultValue="All"
                                     id="homeworld"
                                     style={{ width: 120 }}
-                                    onChange={handleChange}
-                                    options={plantsNameList}
+                                    onChange={(value) => handleFilterChange("homeworld", value)}
+                                    options={[{ value: "All", label: "All" }, ...plantsNameList]}
                                 />
                             </div>
                             <div className="gap-2 flex items-center">
@@ -154,8 +212,8 @@ const Dashboard = () => {
                                     defaultValue="All"
                                     id="film"
                                     style={{ width: 120 }}
-                                    onChange={handleChange}
-                                    options={filmsNameList}
+                                    onChange={(value) => handleFilterChange("film", value)}
+                                    options={[{ value: "All", label: "All" }, ...filmsNameList]}
                                 />
                             </div>
                             <div className="gap-2 flex items-center">
@@ -164,45 +222,48 @@ const Dashboard = () => {
                                     defaultValue="All"
                                     id="species"
                                     style={{ width: 120 }}
-                                    onChange={handleChange}
-                                    options={SpeciesNameList}
+                                    onChange={(value) => handleFilterChange("species", value)}
+                                    options={[{ value: "All", label: "All" }, ...speciesNameList]}
                                 />
                             </div>
                         </div>
                         <div className="flex flex-wrap gap-8 justify-center">
-                            {listDetails.map((character, key) => (
-                                <div
-                                    className={`w-60 rounded-lg shadow-xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-2xl`}
-                                    style={{
-                                        backgroundColor: character.skin_color.includes(',')
-                                            ? character.skin_color.split(',')[0]
-                                            : character.skin_color
-                                    }}
-                                    key={key}
-                                >
-                                    <img
-                                        src={`https://picsum.photos/200/300?random=${character.name}`}
-                                        alt={character.name}
-                                        className="w-full h-48 object-cover rounded-t-lg"
-                                    />
-                                    <div className="p-4">
-                                        <h3 className="text-lg font-bold text-gray-800">{character.name}</h3>
-                                        <div className="mt-3 text-center">
-                                            <button className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
-                                                onClick={() => {
-                                                    handleOpenModal(character)
-                                                }}
-                                            >
-                                                View Details
-                                            </button>
+                            {filteredCharacters.length == 0 ?
+                                <div className="text-lg h-30 text-center">No data found</div>
+
+                                : filteredCharacters.map((character, key) => (
+                                    <div
+                                        className={`w-60 rounded-lg shadow-xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-2xl`}
+                                        style={{
+                                            backgroundColor: character.skin_color.includes(',')
+                                                ? character.skin_color.split(',')[0]
+                                                : character.skin_color
+                                        }}
+                                        key={key}
+                                    >
+                                        <img
+                                            src={`https://picsum.photos/200/300?random=${character.name}`}
+                                            alt={character.name}
+                                            className="w-full h-48 object-cover rounded-t-lg"
+                                        />
+                                        <div className="p-4">
+                                            <h3 className="text-lg font-bold text-gray-800">{character.name}</h3>
+                                            <div className="mt-3 text-center">
+                                                <button className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
+                                                    onClick={() => {
+                                                        handleOpenModal(character)
+                                                    }}
+                                                >
+                                                    View Details
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
                         </div>
                     </>
                 ) : (
-                    <div className="text-lg text-white">No data found</div>
+                    <div className="text-lg">No data found</div>
                 )}
             </div>
             {/* Pagination Controls */}
