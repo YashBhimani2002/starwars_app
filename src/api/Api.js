@@ -20,5 +20,31 @@ export const fetchHomeworld = async (url) => {
     catch (error) {
         console.log(error);
     }
-
 };
+
+export const fetchFilms= async ()=>{
+    try {
+        const response = await axios.get('https://swapi.dev/api/films')
+        return response.data;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const fetchPlanets= async ()=>{
+    try {
+        const response = await axios.get('https://swapi.dev/api/planets')
+        return response.data;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const fetchSpecies = async ()=>{
+    try {
+        const response = await axios.get('https://swapi.dev/api/species')
+        return response.data;
+    } catch (error) {
+        console.log(error)
+    }
+}

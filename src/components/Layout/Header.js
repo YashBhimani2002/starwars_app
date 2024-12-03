@@ -13,7 +13,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4 flex justify-between fixed top-0 right-0 left-0 z-10">
+    <header className="bg-gray-800 text-white p-4 flex justify-between fixed top-0 right-0 left-0 z-[9999]">
       <div className='w-20 h-12'>
         <img src={Logo} className='h-full w-full object-cover' />
       </div>

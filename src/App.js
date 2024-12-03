@@ -11,7 +11,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/' Component={() => <Login />}></Route>
-      
       </Routes>
       <Layout>
         <Header />

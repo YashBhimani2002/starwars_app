@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { fetchCharacters, fetchHomeworld } from "../../../api/Api";
+import { fetchCharacters, fetchFilms, fetchHomeworld, fetchPlanets, fetchSpecies } from "../../../api/Api";
 import { Dialog, DialogTitle, DialogContent, CircularProgress, TextField } from '@mui/material';
 import { Select } from 'antd';
 import { Input } from 'antd';
-const { Search } = Input;
 
-const onSearch = (value, _e, info) => console.log(info?.source, value);
+
+
 
 const Dashboard = () => {
     const [pageNumber, setPageNumber] = useState(1);
@@ -18,10 +18,53 @@ const Dashboard = () => {
     const [modalLoader, setModalLoader] = useState(false);
     const [nextDisable, setNextDisable] = useState(false);
     const [prevDisable, setPrevDisable] = useState(true);
-
-
-    const handleChange = (event) => {
-    };
+    const [filmsNameList, setFilmsNameList] = useState([]);
+    const [plantsNameList, setPlanstNameList] = useState([]);
+    const [SpeciesNameList, setSpeciesNameList] = useState([]);
+    const { Search } = Input;
+    
+    const fetchFilmsList = async () => {
+        try {
+            const response = await fetchFilms();
+            if (response?.results?.length > 0) {
+                const data = [];
+                response.results.map((item) => {
+                    data.push({ value: item.url, label: item.title },)
+                })
+                setFilmsNameList(data);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const fetchPlanetsList = async () => {
+        try {
+            const response = await fetchPlanets();
+            if (response?.results?.length > 0) {
+                const data = [];
+                response.results.map((item) => {
+                    data.push({ value: item.url, label: item.name },)
+                })
+                setPlanstNameList(data);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const fetchSpeciesList = async () => {
+        try {
+            const response = await fetchSpecies();
+            if (response?.results?.length > 0) {
+                const data = [];
+                response.results.map((item) => {
+                    data.push({ value: item.url, label: item.name },)
+                })
+                setSpeciesNameList(data);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const fetchCharactersList = async () => {
         setLoadingStatus(true);
@@ -51,6 +94,9 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchCharactersList();
+        fetchFilmsList();
+        fetchPlanetsList();
+        fetchSpeciesList();
     }, [pageNumber]);
 
     const handleOpenModal = async (data) => {
@@ -70,6 +116,7 @@ const Dashboard = () => {
             setModalLoader(false);
         }
     }
+    const onSearch = (value, _e, info) => console.log(info?.source, value);
 
     // Format date in dd-MM-yyyy
     const formatDate = (dateString) => {
@@ -79,35 +126,48 @@ const Dashboard = () => {
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     };
+    const handleChange = (event) => {
+    };
+
     return (
         <div className="bg-gray-200 w-full min-h-screen p-4 mt-20">
             <div className="flex flex-col space-y-6">
                 {loadingStatus ? (
-                    <div className="text-xl animate-pulse">Loading...</div>
+                    <div className="text-xl animate-pulse flex w-full justify-center items-center">Loading...</div>
                 ) : listDetails?.length > 0 ? (
                     <>
                         <div className="flex flex-wrap flex-1 w-full justify-end items-center gap-4">
-                            <Search placeholder="input search text" onSearch={onSearch} style={{ width: 200 }} />
-                            <Select
-                                defaultValue="All"
-                                style={{ width: 120 }}
-                                onChange={handleChange}
-                                options={[
-                                    { value: 'jack', label: 'Jack' },
-                                    { value: 'lucy', label: 'Lucy' },
-                                    { value: 'Yiminghe', label: 'yiminghe' },
-                                ]}
-                            />
-                            <Select
-                                defaultValue="All"
-                                style={{ width: 120 }}
-                                onChange={handleChange}
-                                options={[
-                                    { value: 'jack', label: 'Jack' },
-                                    { value: 'lucy', label: 'Lucy' },
-                                    { value: 'Yiminghe', label: 'yiminghe' },
-                                ]}
-                            />
+                            <Search placeholder="Search by name" onSearch={onSearch} style={{ width: 200 }} />
+                            <div className="gap-2 flex items-center">
+                                <label>Homeworld :</label>
+                                <Select
+                                    defaultValue="All"
+                                    id="homeworld"
+                                    style={{ width: 120 }}
+                                    onChange={handleChange}
+                                    options={plantsNameList}
+                                />
+                            </div>
+                            <div className="gap-2 flex items-center">
+                                <label>Film :</label>
+                                <Select
+                                    defaultValue="All"
+                                    id="film"
+                                    style={{ width: 120 }}
+                                    onChange={handleChange}
+                                    options={filmsNameList}
+                                />
+                            </div>
+                            <div className="gap-2 flex items-center">
+                                <label>Species :</label>
+                                <Select
+                                    defaultValue="All"
+                                    id="species"
+                                    style={{ width: 120 }}
+                                    onChange={handleChange}
+                                    options={SpeciesNameList}
+                                />
+                            </div>
                         </div>
                         <div className="flex flex-wrap gap-8 justify-center">
                             {listDetails.map((character, key) => (
