@@ -15,7 +15,6 @@ const Login = () => {
   
 
   const onFinish = async (values) => {
-    console.log("Login Data:", values);
     const validUsername = 'user';
     const validPassword = 'password';
 

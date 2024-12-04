@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchCharacters, fetchHomeworld, } from "../../../api/Api";
-import { Dialog, DialogTitle, DialogContent, CircularProgress } from '@mui/material';
+import {  CircularProgress } from '@mui/material';
 import { Select } from 'antd';
 import { Input } from 'antd';
 import { useDispatch, useSelector } from "react-redux";
@@ -41,58 +41,13 @@ const Dashboard = () => {
         dispatch(fetchPlanetsList());
         dispatch(fetchSpeciesList());
     }, [dispatch]);
-
-    // const fetchFilmsList = async () => {
-    //     try {
-    //         const response = await fetchFilms();
-    //         if (response?.results?.length > 0) {
-    //             const data = [];
-    //             response.results.map((item) => {
-    //                 data.push({ value: item.url, label: item.title },)
-    //             })
-    //             setFilmsNameList(data);
-    //         }
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
-    // const fetchPlanetsList = async () => {
-    //     try {
-    //         const response = await fetchPlanets();
-    //         if (response?.results?.length > 0) {
-    //             const data = [];
-    //             response.results.map((item) => {
-    //                 data.push({ value: item.url, label: item.name },)
-    //             })
-    //             setPlanstNameList(data);
-    //         }
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
-    // const fetchSpeciesList = async () => {
-    //     try {
-    //         const response = await fetchSpecies();
-    //         if (response?.results?.length > 0) {
-    //             const data = [];
-    //             response.results.map((item) => {
-    //                 data.push({ value: item.url, label: item.name },)
-    //             })
-    //             setSpeciesNameList(data);
-    //         }
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
-
+    
     //Call characterlist get api
     const fetchCharactersList = async () => {
         setLoadingStatus(true);
         try {
             const response = await fetchCharacters(pageNumber);
-            console.log(response);
             if (response?.results?.length > 0) {
-                console.log(response?.results);
                 if (response?.next == null) {
                     setNextDisable(true);
                 } else if (response?.next != null) {
@@ -127,7 +82,6 @@ const Dashboard = () => {
         });
         try {
             const response = await fetchHomeworld(data.homeworld);
-            console.log(response);
             setHomeworld({
                 name: response.name, terrain: response.terrain, climate: response.climate, population: response.population
             })
@@ -138,7 +92,6 @@ const Dashboard = () => {
     }
     //Set search value
     const onSearch = (e) => {
-        console.log(e.target.value);
         setSearchTerm(e.target.value)
     };
 

@@ -9,7 +9,6 @@ const DialogModal = (props) => {
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     };
-    console.log("Props in DialogModal:", { modalOpen, selectedCharacter, homeworld });
     
     return (
         <Dialog open={modalOpen} onClose={() => setModalOpen(false)} maxWidth="sm" fullWidth>

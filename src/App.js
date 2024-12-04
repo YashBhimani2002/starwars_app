@@ -17,11 +17,11 @@ function App() {
   const status = useSelector((state) => state.auth.isAuthenticated);
   const { token } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (token) {
-      setupTokenRefresh(); // Set up the silent refresh mechanism
-    }
-  }, [token]);
+  // useEffect(() => {
+  //   if (token) {
+  //     setupTokenRefresh(); // Set up the silent refresh mechanism
+  //   }
+  // }, [token]);
   useEffect(() => {
     setIsLoggedIn(status);
   }, [status]);
