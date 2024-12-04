@@ -7,8 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchFilmsList, fetchPlanetsList, fetchSpeciesList } from "../../../redux/slices/apiSlice";
 import DialogModal from "../Modal/DialogModal";
 
-
-
 const Dashboard = () => {
     const [pageNumber, setPageNumber] = useState(1);
     const [loadingStatus, setLoadingStatus] = useState(false);
@@ -28,12 +26,11 @@ const Dashboard = () => {
         species: "All",
     });
     const { Search } = Input;
-
-
     const dispatch = useDispatch();
-
     // Select data from Redux store
-    const { films, planets, species } = useSelector((state) => state.data);
+    const films = useSelector((state)=>state?.data?.films || [])
+    const planets = useSelector((state)=>state?.data?.planets || [])
+    const species = useSelector((state)=>state?.data?.species || [])
 
     // Dispatch API calls on component mount
     useEffect(() => {
