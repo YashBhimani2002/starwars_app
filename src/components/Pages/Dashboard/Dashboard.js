@@ -145,7 +145,7 @@ const Dashboard = () => {
                 <div className="text-xl h-screen bg-gray-200 animate-pulse flex w-full h-full justify-center items-center">
                     <CircularProgress />
                 </div> :
-                <div className="bg-gray-200 w-full p-5 h-full flex  flex-col gap-5 h-[80vh] overflow-y-scroll">
+                <div className="bg-gray-200 w-full p-5 flex  flex-col gap-5 h-[80vh] overflow-y-scroll">
                     <div className="flex md:flex-row flex-col flex-wrap flex-1 w-full md:justify-end items-center gap-4">
                         <Search placeholder="Search by name" onChange={onSearch} className="w-full md:w-[200px]" />
                         <div className="gap-2 flex md:items-center md:flex-row flex-col w-full md:w-auto">
