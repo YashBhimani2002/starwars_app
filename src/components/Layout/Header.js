@@ -13,16 +13,18 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4 flex justify-between fixed top-0 right-0 left-0 z-[9999]">
-      <div className='w-20 h-12'>
+    <header className="bg-gray-800 text-white py-1 px-4 flex justify-between h-full">
+      <div className='w-20 h-full'>
         <img src={Logo} className='h-full w-full object-cover' />
       </div>
+      <div className='flex items-center'>
       <button
         onClick={handleLogout}
-        className="bg-red-500 text-white px-4 pb-2 pt-[0.3rem] rounded hover:bg-red-600"
+        className="bg-red-500 text-white flex items-center justify-center rounded hover:bg-red-600 w-20 h-10"
       >
         Logout
       </button>
+      </div>
     </header>
   );
 };

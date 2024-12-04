@@ -20,6 +20,11 @@ const authSlice = createSlice({
       // Store token in cookies
       Cookies.set('token', token, { expires: 7, secure: true });
     },
+    refreshAccessToken(state, action) {
+      const { token } = action.payload;
+      state.isAuthenticated = true;
+      state.token = token;
+    },
     logout(state) {
       state.isAuthenticated = false;
       state.token = null;
@@ -31,5 +36,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login,refreshAccessToken, logout } = authSlice.actions;
 export default authSlice.reducer;

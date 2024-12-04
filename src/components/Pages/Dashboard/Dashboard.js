@@ -5,6 +5,7 @@ import { Select } from 'antd';
 import { Input } from 'antd';
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFilmsList, fetchPlanetsList, fetchSpeciesList } from "../../../redux/slices/apiSlice";
+import DialogModal from "../Modal/DialogModal";
 
 
 
@@ -19,9 +20,6 @@ const Dashboard = () => {
     const [modalLoader, setModalLoader] = useState(false);
     const [nextDisable, setNextDisable] = useState(false);
     const [prevDisable, setPrevDisable] = useState(true);
-    const [filmsNameList, setFilmsNameList] = useState([]);
-    const [plantsNameList, setPlanstNameList] = useState([]);
-    const [speciesNameList, setSpeciesNameList] = useState([]);
     const [filteredCharacters, setFilteredCharacters] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [filters, setFilters] = useState({
@@ -144,15 +142,6 @@ const Dashboard = () => {
         setSearchTerm(e.target.value)
     };
 
-    // Format date in dd-MM-yyyy
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, '0'); // Ensures two digits for day
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Get month and ensure two digits
-        const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
-    };
-
     // Filter and search logic
     const applyFilters = () => {
         let filteredList = listDetails;
@@ -197,7 +186,7 @@ const Dashboard = () => {
                 <div className="text-xl h-screen bg-gray-200 animate-pulse flex w-full h-full justify-center items-center">
                     <CircularProgress />
                 </div> :
-                <div className="bg-gray-200 w-full p-5 h-full flex  flex-col gap-5 mt-20">
+                <div className="bg-gray-200 w-full p-5 h-full flex  flex-col gap-5 ">
                     <div className="flex md:flex-row flex-col flex-wrap flex-1 w-full md:justify-end items-center gap-4">
                         <Search placeholder="Search by name" onChange={onSearch} className="w-full md:w-[200px]" />
                         <div className="gap-2 flex md:items-center md:flex-row flex-col w-full md:w-auto">
@@ -242,7 +231,7 @@ const Dashboard = () => {
                                             className={`w-60 rounded-lg shadow-xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-2xl`}
                                             style={{
                                                 backgroundColor: character.skin_color.includes(',')
-                                                    ? character.skin_color.split(',')[0]
+                                                    ? character.skin_color.split(',')[1]
                                                     : character.skin_color
                                             }}
                                             key={key}
@@ -292,43 +281,13 @@ const Dashboard = () => {
                         </div>
                     )}
                     {/* Character Modal */}
-                    <Dialog open={modalOpen} onClose={() => setModalOpen(false)} maxWidth="sm" fullWidth >
-                        <DialogTitle className="text-center text-2xl font-semibold text-gray-800">{selectedCharacter?.name}</DialogTitle>
-                        <DialogContent className="p-6">
-                            {modalLoader ? (
-                                <div className="flex justify-center items-center">
-                                    <CircularProgress />
-                                </div>
-                            ) : (
-                                <div className="bg-white md:flex shadow-lg rounded-lg p-3 space-y-4 gap-6">
-                                    <div className="text-center w-full h-[20vh] md:h-50 flex items-center">
-                                        <img
-                                            src={`https://picsum.photos/200/300?random=${selectedCharacter?.name}`}
-                                            alt={selectedCharacter?.name}
-                                            className="w-full h-full rounded-md object-cover "
-                                        />
-                                    </div>
-                                    <div className="space-y-2 text-gray-700 flex-1">
-                                        <p><strong>Height:</strong> {selectedCharacter?.height / 100} m</p>
-                                        <p><strong>Mass:</strong> {selectedCharacter?.mass} kg</p>
-                                        <p><strong>Date:</strong> {formatDate(selectedCharacter?.date)}</p>
-                                        <p><strong>Birth Year:</strong> {selectedCharacter?.birth_year}</p>
-                                        <p><strong>Films:</strong> {selectedCharacter?.films?.length}</p>
-
-                                        {homeworld && Object.keys(homeworld).length > 0 && (
-                                            <div className="mt-4">
-                                                <h3 className="font-semibold text-lg text-gray-800">Homeworld Details:</h3>
-                                                <p><strong>Name:</strong> {homeworld?.name}</p>
-                                                <p><strong>Terrain:</strong> {homeworld?.terrain}</p>
-                                                <p><strong>Climate:</strong> {homeworld?.climate}</p>
-                                                <p><strong>Population:</strong> {homeworld?.population}</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-                        </DialogContent>
-                    </Dialog>
+                    <DialogModal 
+                     modalOpen={modalOpen}
+                     setModalOpen={setModalOpen}
+                     selectedCharacter={selectedCharacter}
+                     homeworld={homeworld}
+                     modalLoader={modalLoader}
+                    />
                 </div>}
         </>
     );
