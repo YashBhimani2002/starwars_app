@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchCharacters, fetchHomeworld, } from "../../../api/Api";
-import {  CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import { Select } from 'antd';
 import { Input } from 'antd';
 import { useDispatch, useSelector } from "react-redux";
@@ -41,37 +41,40 @@ const Dashboard = () => {
         dispatch(fetchPlanetsList());
         dispatch(fetchSpeciesList());
     }, [dispatch]);
-    
+
     //Call characterlist get api
-    const fetchCharactersList = async () => {
+    const fetchCharactersList = useCallback(async () => {
         setLoadingStatus(true);
         try {
             const response = await fetchCharacters(pageNumber);
-            if (response?.results?.length > 0) {
-                if (response?.next == null) {
-                    setNextDisable(true);
-                } else if (response?.next != null) {
-                    setNextDisable(false);
-                };
-                if (response?.previous == null) {
-                    setPrevDisable(true);
-                } else if (response?.previous != null) {
-                    setPrevDisable(false);
+            if (response?.status === 200) {
+                let data = response.data;
+                if (data?.results?.length > 0) {
+                    if (data?.next == null) {
+                        setNextDisable(true);
+                    } else if (data?.next != null) {
+                        setNextDisable(false);
+                    };
+                    if (data?.previous == null) {
+                        setPrevDisable(true);
+                    } else if (data?.previous != null) {
+                        setPrevDisable(false);
+                    }
+                    setListDetails(data?.results);
+                    setFilteredCharacters(data?.results);
+                    setTotalCount(data?.count);
+                    setLoadingStatus(false);
                 }
-                setListDetails(response?.results);
-                setFilteredCharacters(response?.results);
-                setTotalCount(response?.count);
-                setLoadingStatus(false);
             }
         } catch (error) {
             setLoadingStatus(false);
         }
-    };
+    }, [pageNumber]);
 
     //Call the api to show detials on dashboard
     useEffect(() => {
         fetchCharactersList();
-    }, [pageNumber]);
+    }, [pageNumber, fetchCharactersList]);
 
     // handle to set modal box details
     const handleOpenModal = async (data) => {
@@ -82,10 +85,13 @@ const Dashboard = () => {
         });
         try {
             const response = await fetchHomeworld(data.homeworld);
-            setHomeworld({
-                name: response.name, terrain: response.terrain, climate: response.climate, population: response.population
-            })
-            setModalLoader(false);
+            if (response?.status === 200) {
+                let data = response.data;
+                setHomeworld({
+                    name: data.name, terrain: data.terrain, climate: data.climate, population: data.population
+                })
+                setModalLoader(false);
+            }
         } catch (error) {
             setModalLoader(false);
         }
@@ -96,7 +102,7 @@ const Dashboard = () => {
     };
 
     // Filter and search logic
-    const applyFilters = () => {
+    const applyFilters = useCallback(() => {
         let filteredList = listDetails;
         // Search by name (partial or full match, case-insensitive)
         if (searchTerm) {
@@ -119,12 +125,12 @@ const Dashboard = () => {
             filteredList = filteredList.filter(character => character.species === filters.species);
         }
         setFilteredCharacters(filteredList);
-    };
+    }, [searchTerm, filters, listDetails]);
 
     // Update filtered characters when searchTerm or filters change
     useEffect(() => {
         applyFilters();
-    }, [searchTerm, filters]);
+    }, [searchTerm, filters, applyFilters]);
 
     const handleFilterChange = (filterType, value) => {
         setFilters({
@@ -139,7 +145,7 @@ const Dashboard = () => {
                 <div className="text-xl h-screen bg-gray-200 animate-pulse flex w-full h-full justify-center items-center">
                     <CircularProgress />
                 </div> :
-                <div className="bg-gray-200 w-full p-5 h-full flex  flex-col gap-5 ">
+                <div className="bg-gray-200 w-full p-5 h-full flex  flex-col gap-5 h-[80vh] overflow-y-scroll">
                     <div className="flex md:flex-row flex-col flex-wrap flex-1 w-full md:justify-end items-center gap-4">
                         <Search placeholder="Search by name" onChange={onSearch} className="w-full md:w-[200px]" />
                         <div className="gap-2 flex md:items-center md:flex-row flex-col w-full md:w-auto">
@@ -176,7 +182,7 @@ const Dashboard = () => {
                     <div className="flex flex-col space-y-6">
                         {listDetails?.length > 0 ? (
                             <div className="flex flex-wrap gap-8 justify-center">
-                                {filteredCharacters.length == 0 ?
+                                {filteredCharacters.length === 0 ?
                                     <div className="text-lg h-30 text-center">No data found</div>
 
                                     : filteredCharacters.map((character, key) => (
@@ -212,34 +218,35 @@ const Dashboard = () => {
                         ) : (
                             <div className="text-lg">No data found</div>
                         )}
+                        {/* Pagination Controls */}
+                        {storeCount > 10 && listDetails.length !== 0 && (
+                            <div className="mt-6 flex justify-center space-x-4">
+                                <button
+                                    className={`${prevDisable ? "bg-gray-600" : "bg-blue-500 hover:bg-blue-600 "} text-white  px-6 py-2 rounded-full transition duration-300 cursor-pointer`}
+                                    onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                                    disabled={prevDisable}
+                                >
+                                    Prev
+                                </button>
+                                <span className="pt-1 font-medium">Page {pageNumber}</span>
+                                <button
+                                    className={`${nextDisable ? "bg-gray-600" : "bg-blue-500 hover:bg-blue-600 "} text-white px-6 py-2 rounded-full transition duration-300 cursor-pointer`}
+                                    onClick={() => setPageNumber((prev) => prev + 1)}
+                                    disabled={nextDisable}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
                     </div>
-                    {/* Pagination Controls */}
-                    {storeCount > 10 && listDetails.length !== 0 && (
-                        <div className="mt-6 flex justify-center space-x-4">
-                            <button
-                                className={`${prevDisable ? "bg-gray-600" : "bg-blue-500 hover:bg-blue-600 "} text-white  px-6 py-2 rounded-full transition duration-300 cursor-pointer`}
-                                onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-                                disabled={prevDisable}
-                            >
-                                Prev
-                            </button>
-                            <span className="pt-1 font-medium">Page {pageNumber}</span>
-                            <button
-                                className={`${nextDisable ? "bg-gray-600" : "bg-blue-500 hover:bg-blue-600 "} text-white px-6 py-2 rounded-full transition duration-300 cursor-pointer`}
-                                onClick={() => setPageNumber((prev) => prev + 1)}
-                                disabled={nextDisable}
-                            >
-                                Next
-                            </button>
-                        </div>
-                    )}
+
                     {/* Character Modal */}
-                    <DialogModal 
-                     modalOpen={modalOpen}
-                     setModalOpen={setModalOpen}
-                     selectedCharacter={selectedCharacter}
-                     homeworld={homeworld}
-                     modalLoader={modalLoader}
+                    <DialogModal
+                        modalOpen={modalOpen}
+                        setModalOpen={setModalOpen}
+                        selectedCharacter={selectedCharacter}
+                        homeworld={homeworld}
+                        modalLoader={modalLoader}
                     />
                 </div>}
         </>

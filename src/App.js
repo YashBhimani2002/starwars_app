@@ -8,20 +8,14 @@ import Login from './components/Auth/Login';
 import Header from './components/Layout/Header';
 import Dashboard from './components/Pages/Dashboard/Dashboard';
 import ProtectedRoute from './utils/ProtectedRoute';
-import { setupTokenRefresh } from './utils/tokenUtils';
+
 
 const { Header: AntHeader, Content, Footer } = Layout;
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const status = useSelector((state) => state.auth.isAuthenticated);
-  const { token } = useSelector((state) => state.auth);
-
-  // useEffect(() => {
-  //   if (token) {
-  //     setupTokenRefresh(); // Set up the silent refresh mechanism
-  //   }
-  // }, [token]);
+  
   useEffect(() => {
     setIsLoggedIn(status);
   }, [status]);

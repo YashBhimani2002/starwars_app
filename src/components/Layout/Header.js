@@ -15,7 +15,7 @@ const Header = () => {
   return (
     <header className="bg-gray-800 text-white py-1 px-4 flex justify-between h-full">
       <div className='w-20 h-full'>
-        <img src={Logo} className='h-full w-full object-cover' />
+        <img src={Logo} className='h-full w-full object-cover' alt='logo'/>
       </div>
       <div className='flex items-center'>
       <button
