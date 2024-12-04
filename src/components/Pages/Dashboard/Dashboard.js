@@ -197,35 +197,35 @@ const Dashboard = () => {
                 <div className="text-xl h-screen bg-gray-200 animate-pulse flex w-full h-full justify-center items-center">
                     <CircularProgress />
                 </div> :
-                <div className="bg-gray-200 w-full p-5 flex flex-col gap-5 mt-20">
-                    <div className="flex flex-wrap flex-1 w-full justify-end items-center gap-4">
-                        <Search placeholder="Search by name" onChange={onSearch} style={{ width: 200 }} />
-                        <div className="gap-2 flex items-center">
+                <div className="bg-gray-200 w-full p-5 h-full flex  flex-col gap-5 mt-20">
+                    <div className="flex md:flex-row flex-col flex-wrap flex-1 w-full md:justify-end items-center gap-4">
+                        <Search placeholder="Search by name" onChange={onSearch} className="w-full md:w-[200px]" />
+                        <div className="gap-2 flex md:items-center md:flex-row flex-col w-full md:w-auto">
                             <label>Homeworld :</label>
                             <Select
                                 defaultValue="All"
                                 id="homeworld"
-                                style={{ width: 120 }}
+                                className="w-full md:w-[120px]"
                                 onChange={(value) => handleFilterChange("homeworld", value)}
                                 options={[{ value: "All", label: "All" }, ...planets]}
                             />
                         </div>
-                        <div className="gap-2 flex items-center">
+                        <div className="gap-2 flex md:items-center md:flex-row flex-col w-full md:w-auto">
                             <label>Film :</label>
                             <Select
                                 defaultValue="All"
                                 id="film"
-                                style={{ width: 120 }}
+                                className="w-full md:w-[120px]"
                                 onChange={(value) => handleFilterChange("film", value)}
                                 options={[{ value: "All", label: "All" }, ...films]}
                             />
                         </div>
-                        <div className="gap-2 flex items-center">
+                        <div className="gap-2 flex md:items-center md:flex-row flex-col w-full md:w-auto">
                             <label>Species :</label>
                             <Select
                                 defaultValue="All"
                                 id="species"
-                                style={{ width: 120 }}
+                                className="w-full md:w-[120px]"
                                 onChange={(value) => handleFilterChange("species", value)}
                                 options={[{ value: "All", label: "All" }, ...species]}
                             />
