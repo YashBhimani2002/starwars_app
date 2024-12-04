@@ -6,7 +6,6 @@ import Logo from "../../assets/logo.png"
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const handleLogout = () => {
     dispatch(logout());
     navigate('/');

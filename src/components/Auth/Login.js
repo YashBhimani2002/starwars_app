@@ -12,17 +12,15 @@ const Login = () => {
   const [modalMessage, setModalMessage] = useState("");
   const dispatch = useDispatch();
 
-  
-
   const onFinish = async (values) => {
     const validUsername = 'user';
     const validPassword = 'password';
 
     if (values.username === validUsername && values.password === validPassword) {
-      const token = 'mock-jwt-token'; // Mock token
-      const user = { username: values.username }; // Mock user
-      dispatch(login({ token, user })); // Dispatch the login action with token and user details
-      navigate('/dashboard'); // Navigate to the dashboard
+      const token = 'mock-jwt-token'; // Fack Mock token
+      const user = { username: values.username }; // Fack Mock user
+      dispatch(login({ token, user })); // Dispatch the login action 
+      navigate('/dashboard'); 
     } else {
       setModalType("Failure"); // Define action modal type eg. Failure
       setModalMessage('Invalid username or password'); // Define modal message for show reponse
